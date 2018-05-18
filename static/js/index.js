@@ -5,6 +5,7 @@ class WeatherParameters {
     constructor() {
         this.temp = null;
         this.wd = null;
+        this.ws = null;
         this.wsymb2 = null;
         this.pmean = null;
     }
@@ -21,6 +22,11 @@ class WeatherParameters {
                 this.wd = parameterData.values[0];
                 console.log('wd = ' + parameterData.values[0]);
             }
+            
+            if(parameterData.name == "ws") {
+                this.ws = parameterData.values[0];
+                console.log('ws = ' + parameterData.values[0]);
+            }
 
             if(parameterData.name == "Wsymb2") {
                 this.wsymb2 = parameterData.values[0];
@@ -35,7 +41,7 @@ class WeatherParameters {
     }
     
     toString() {
-        return "WeatherParameters[temp=" + this.temp + ",wd=" + this.wd + ",wsymb2=" + this.wsymb2 + ",pmean=" + this.pmean + "]";
+        return "WeatherParameters[temp=" + this.temp + ",wd=" + this.wd + ",ws=" + this.ws + ",wsymb2=" + this.wsymb2 + ",pmean=" + this.pmean + "]";
     }
     
 }
@@ -132,7 +138,7 @@ function createWeatherRow(time, weatherData) {
     tr.appendChild(td);
     
     var td = document.createElement('td');
-    td.innerHTML = weatherData.wd;
+    td.innerHTML = weatherData.wd + ',' + weatherData.ws;
     tr.appendChild(td);
     
     var td = document.createElement('td');
