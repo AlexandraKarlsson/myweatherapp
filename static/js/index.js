@@ -173,9 +173,28 @@ function createWeatherRow(time, weatherData) {
     td.innerHTML = weatherData.temp;
     tr.appendChild(td);
     
+    //Wind speed and direction
+    
     var td = document.createElement('td');
-    td.innerHTML = weatherData.wd + ' , ' + weatherData.ws;
+    var div = document.createElement('div');
+    div.className = 'wind';
+    
+    var img = document.createElement('img');
+    img.setAttribute('src', './static/media/arrowTransparent.jpg');
+    img.setAttribute('style', 'height: 20px; transform: rotate(-' + weatherData.wd + 'deg');
+    div.appendChild(img);
+    
+    var span = document.createElement('span');
+    span.className = 'speed';
+    span.innerHTML = weatherData.ws;
+    div.appendChild(span);
+    
+    //td.innerHTML = weatherData.wd + ' , ' + weatherData.ws;
+    td.appendChild(div);
     tr.appendChild(td);
+    
+    
+    
     
     var td = document.createElement('td');
     td.innerHTML = wsymb2Array[weatherData.wsymb2];
