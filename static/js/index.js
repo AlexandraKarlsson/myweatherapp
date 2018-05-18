@@ -1,5 +1,41 @@
 'use strict';
 
+const wsymb2Array = [
+    'dummy',
+    'Clear sky',
+    'Nearly clear sky',
+    'Variable cloudiness',
+    'Halfclear sky',
+    'Cloudy sky',
+    'Overcast',
+    'Fog',
+    'Light rain showers',
+    'Moderate rain showers',
+    'Heavy rain showers',
+    'Thunderstorm',
+    'Light sleet showers',
+    'Moderate sleet showers',
+    'Heavy sleet showers',
+    'Light snow showers',
+    'Moderate snow showers',
+    'Heavy snow showers',
+    'Light rain',
+    'Moderate rain',
+    'Heavy rain',
+    'Thunder',
+    'Light sleet',
+    'Moderate sleet',
+    'Heavy sleet',
+    'Light snowfall',
+    'Moderate snowfall',
+    'Heavy snowfall' 
+];
+
+/*
+
+
+*/
+
 class WeatherParameters {
     
     constructor() {
@@ -138,11 +174,11 @@ function createWeatherRow(time, weatherData) {
     tr.appendChild(td);
     
     var td = document.createElement('td');
-    td.innerHTML = weatherData.wd + ',' + weatherData.ws;
+    td.innerHTML = weatherData.wd + ' , ' + weatherData.ws;
     tr.appendChild(td);
     
     var td = document.createElement('td');
-    td.innerHTML = weatherData.wsymb2;
+    td.innerHTML = wsymb2Array[weatherData.wsymb2];
     tr.appendChild(td);
     
     var td = document.createElement('td');
