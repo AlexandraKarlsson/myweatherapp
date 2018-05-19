@@ -1,42 +1,15 @@
-'use strict';
 
-const wsymb2Array = [
-    'dummy',
-    'Clear sky',
-    'Nearly clear sky',
-    'Variable cloudiness',
-    'Halfclear sky',
-    'Cloudy sky',
-    'Overcast',
-    'Fog',
-    'Light rain showers',
-    'Moderate rain showers',
-    'Heavy rain showers',
-    'Thunderstorm',
-    'Light sleet showers',
-    'Moderate sleet showers',
-    'Heavy sleet showers',
-    'Light snow showers',
-    'Moderate snow showers',
-    'Heavy snow showers',
-    'Light rain',
-    'Moderate rain',
-    'Heavy rain',
-    'Thunder',
-    'Light sleet',
-    'Moderate sleet',
-    'Heavy sleet',
-    'Light snowfall',
-    'Moderate snowfall',
-    'Heavy snowfall' 
-];
-
-/*
-
-
+/* HOW TO USE:
+    - Add axios support <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    - Add weather-widget script  <script src="static/js/index.js" type="text/javascript"></script>
+    - Add wind-icon file ./static/media/arrowTransparent.jpg
+    - Add div for the widget <div id="weather-widget"/>
 */
 
-class WeatherParameters {
+(function() {
+    'use strict';
+    
+        class WeatherParameters {
     
     constructor() {
         this.temp = null;
@@ -47,7 +20,7 @@ class WeatherParameters {
     }
     
     parse(parametersData) {
-        parametersData.forEach(function(parameterData){
+        parametersData.forEach(function(parameterData) {
         
             if(parameterData.name == "t") {
                 this.temp = parameterData.values[0];
@@ -73,7 +46,7 @@ class WeatherParameters {
                 this.pmean = parameterData.values[0];
                 console.log('pmean = ' + parameterData.values[0]);
             }
-        },this);
+        }, this);
     }
     
     toString() {
@@ -82,7 +55,8 @@ class WeatherParameters {
     
 }
 
-class DayWeather {
+    
+    class DayWeather {
     
     constructor() {
         this.kl6 = null;
@@ -119,7 +93,7 @@ class DayWeather {
                 parameters.parse(timeData.parameters);
                 this.kl18 = parameters;
             }
-        },this); 
+        }, this); 
     }
     
     toString() {
@@ -128,9 +102,141 @@ class DayWeather {
             ",kl18=" + (this.kl18!==null?this.kl18.toString():"null") +"]";
     }
 }
+    
+    const wsymb2Array = [
+        'dummy',
+        'Klart',//'Clear sky',
+        'Halvklart',//'Nearly clear sky',
+        'Växlande molnighet',//'Variable cloudiness',
+        'Halvklart',//'Halfclear sky',
+        'Molnigt',//'Cloudy sky',
+        'Mulet',//'Overcast',
+        'Dimmigt',//'Fog',
+        'Lätta regnskurar',//'Light rain showers',
+        'Måttliga regnskurar',//'Moderate rain showers',
+        'Kraftiga regnskurar',//'Heavy rain showers',
+        'Åska', //'Thunderstorm',
+        'Snöblandat regn',//'Light sleet showers',
+        'Måttligt snöblandat regn',//'Moderate sleet showers',
+        'Kraftigt snöblandat regn', //'Heavy sleet showers',
+        'Lätta snöbyar', //'Light snow showers',
+        'Måttliga snöbyar', //'Moderate snow showers',
+        'Kraftiga snöbyar', //'Heavy snow showers',
+        'Lätt regn', //'Light rain',
+        'Måttligt regn', //'Moderate rain',
+        'Kraftigt regn', //'Heavy rain',
+        'Åska', //'Thunder',
+        'Lätt snö', //'Light sleet',
+        'Måttlig snö', //'Moderate sleet',
+        'Kraftig snö', //'Heavy sleet',
+        'Lätt snöfall', //'Light snowfall',
+        'Måttligt snöfall', //'Moderate snowfall',
+        'Kraftigt snöfall' //'Heavy snowfall' 
+    ];
+    
+    function createWeatherRow(time, weatherData) {
+        
+        
+        var tr = document.createElement('tr');
 
+        var td = document.createElement('td');
+        td.innerHTML = time;
+        tr.appendChild(td);
 
-(function() {
+        var td = document.createElement('td');
+        td.innerHTML = weatherData.temp;
+        tr.appendChild(td);
+
+        //Wind speed and direction
+
+        var td = document.createElement('td');
+        var div = document.createElement('div');
+        div.setAttribute('style', 'display:flex');
+
+        var img = document.createElement('img');
+        img.setAttribute('src', './static/media/arrowTransparent.jpg');
+        img.setAttribute('style', 'height: 20px; margin: 2px; transform: rotate(-' + weatherData.wd + 'deg');
+        div.appendChild(img);
+
+        var span = document.createElement('span');
+        span.setAttribute('style', 'display: block; margin: auto; text-align: center');
+        span.innerHTML = weatherData.ws;
+        div.appendChild(span);
+
+        //td.innerHTML = weatherData.wd + ' , ' + weatherData.ws;
+        td.appendChild(div);
+        tr.appendChild(td);
+
+        var td = document.createElement('td');
+        td.innerHTML = wsymb2Array[weatherData.wsymb2];
+        tr.appendChild(td);
+
+        var td = document.createElement('td');
+        td.innerHTML = weatherData.pmean;
+        tr.appendChild(td);
+
+        return tr;
+    }
+    
+    
+    function createHeaderCell(header) {
+        var th = document.createElement('th');
+        th.innerHTML = header;
+        return th;
+    }
+    
+    function createTableHeader() {
+        console.log('Enter the createtableHeader function');
+        var tr = document.createElement('tr');
+        tr.appendChild(createHeaderCell('Tid'));
+        tr.appendChild(createHeaderCell('Temp'));
+        tr.appendChild(createHeaderCell('Vind'));
+        tr.appendChild(createHeaderCell('Himmel'));
+        tr.appendChild(createHeaderCell('Regn'));
+        return tr;
+    }
+    
+    function createWeatherTable(weatherDay) {
+        console.log('Enter the createWeatherTable function');
+        var weatherTable = document.createElement('table');
+        weatherTable.setAttribute('style', 'border-spacing: 10px');
+        weatherTable.appendChild(createTableHeader());
+        
+        if(weatherDay.kl6 !== null) {
+           weatherTable.appendChild(createWeatherRow('6', weatherDay.kl6));
+        }
+        if(weatherDay.kl12 !== null) {
+           weatherTable.appendChild(createWeatherRow('12', weatherDay.kl12));
+        }
+        if(weatherDay.kl18 !== null) {
+           weatherTable.appendChild(createWeatherRow('18', weatherDay.kl18));
+        }
+        return weatherTable;
+    }
+    
+
+    function createWidgetDOM(todaysWeather, tomorrowsWeather) {
+        
+        console.log('Enter the createWidgetDOM function');
+        
+        var containerDiv = document.querySelector('#weather-widget');
+        
+        /*Building widget content*/
+        
+        var h1 = document.createElement('h1');
+        h1.innerHTML = 'Väder';
+        containerDiv.appendChild(h1);
+        
+        var h2Today = document.createElement('h2');
+        h2Today.innerHTML = 'Idag';
+        containerDiv.appendChild(h2Today);
+        containerDiv.appendChild(createWeatherTable(todaysWeather));
+        
+        var h2Tomorrow = document.createElement('h2');
+        h2Tomorrow.innerHTML = 'Imorgon';
+        containerDiv.appendChild(h2Tomorrow);
+        containerDiv.appendChild(createWeatherTable(tomorrowsWeather));
+    }
     
     const SMHIURL = 'https://opendata-download-metfcst.smhi.se/api/category/pmp3g/version/2/geotype/point/lon/16.158/lat/58.5812/data.json';
     
@@ -153,186 +259,13 @@ class DayWeather {
             tomorrow.parse(tomorrowsDate, response.data);
             console.log("Tomorrow = " + tomorrow.toString());
         
-            uppdateDOM(today,tomorrow);
+            createWidgetDOM(today,tomorrow);
         })
         .catch(function (error) {
-            console.log(error);
+            console.log('Failed to access SMHIs open API');
         });
+    
 
 })();
 
 
-function createWeatherRow(time, weatherData) {
-    var tr = document.createElement('tr');
-    
-    var td = document.createElement('td');
-    td.innerHTML = time;
-    tr.appendChild(td);
-    
-    var td = document.createElement('td');
-    td.innerHTML = weatherData.temp;
-    tr.appendChild(td);
-    
-    //Wind speed and direction
-    
-    var td = document.createElement('td');
-    var div = document.createElement('div');
-    div.className = 'wind';
-    
-    var img = document.createElement('img');
-    img.setAttribute('src', './static/media/arrowTransparent.jpg');
-    img.setAttribute('style', 'height: 20px; transform: rotate(-' + weatherData.wd + 'deg');
-    div.appendChild(img);
-    
-    var span = document.createElement('span');
-    span.className = 'speed';
-    span.innerHTML = weatherData.ws;
-    div.appendChild(span);
-    
-    //td.innerHTML = weatherData.wd + ' , ' + weatherData.ws;
-    td.appendChild(div);
-    tr.appendChild(td);
-    
-    
-    
-    
-    var td = document.createElement('td');
-    td.innerHTML = wsymb2Array[weatherData.wsymb2];
-    tr.appendChild(td);
-    
-    var td = document.createElement('td');
-    td.innerHTML = weatherData.pmean;
-    tr.appendChild(td);
-
-    return tr;
-}
-
-function uppdateDOM(todaysWeather, tomorrowsWeather) {
-    
-    /* uppdatera dagens väder*/
-    var todayTable = document.querySelector('#weather-today');
-    
-    if(todaysWeather.kl6 !== null) {
-       todayTable.appendChild(createWeatherRow('6', todaysWeather.kl6));
-    }
-    if(todaysWeather.kl12 !== null) {
-       todayTable.appendChild(createWeatherRow('12', todaysWeather.kl12));
-    }
-    if(todaysWeather.kl18 !== null) {
-       todayTable.appendChild(createWeatherRow('18', todaysWeather.kl18));
-    }
-
-    
-    /* uppdatera morgondagens väder*/
-    var tomorrowTable = document.querySelector('#weather-tomorrow');
-    
-    if(tomorrowsWeather.kl6 !== null) {
-       tomorrowTable.appendChild(createWeatherRow('6', tomorrowsWeather.kl6));
-    }
-    if(tomorrowsWeather.kl12 !== null) {
-       tomorrowTable.appendChild(createWeatherRow('12', tomorrowsWeather.kl12));
-    }
-    if(tomorrowsWeather.kl18 !== null) {
-       tomorrowTable.appendChild(createWeatherRow('18', tomorrowsWeather.kl18));
-    }
-    
-    
-    
-}
-
-function injectDOM() {
-    
-    
-    
-    
-    
-}
-
-
-
-
-/*
-function filterResponse(data) {
-    
-    var weatherData = [];
-    
-    //sätter tiderna som skall hämtas ut ur tidserien
-    
-    var kl6 = new Date();
-    kl6.setHours(6,0,0,0);
-    
-    var kl12 = new Date();
-    kl12.setHours(12,0,0,0);
-    
-    var kl18 = new Date();
-    kl18.setHours(18,0,0,0);
-    
-    //går igenom arrayen timeSeries och loopar igenom för att hitta de specifika
-    //tiderna, om de hittas anropar jag filtrering av parameterna och tilldelar 
-    //arrayen weatherData
-    
-    data.timeSeries.forEach(function(timeData) {
-        
-        var d = new Date(timeData.validTime);
-        
-        if(d.getTime() == kl6.getTime()) {
-            weatherData.push(selectParameters(timeData, kl6));
-        }
-        if(d.getTime() == kl12.getTime()) {
-            weatherData.push(selectParameters(timeData, kl12));
-        }
-        if(d.getTime() == kl18.getTime()) {
-            weatherData.push(selectParameters(timeData, kl18));
-        }
-    });
-    
-
-}
-*/
-
-/*
-function selectParameters(dataObj, time) {
-    
-    //funktion som hämtar de specifika parametervärdena och tilldelar en array
-    
-    var weather = null;
-    var temp;
-    var wd;
-    var wsymb2;
-    var pmean;
-    
-    dataObj.parameters.forEach(function(item){
-        
-        if(item.name == "t") {
-           temp = item.values[0];
-            console.log('t = ' + item.values[0]);
-        }
-        
-        if(item.name == "wd") {
-           wd = item.values[0];
-            console.log('wd = ' + item.values[0]);
-        }
-        
-        if(item.name == "Wsymb2") {
-           wsymb2 = item.values[0];
-            console.log('wsymb2 = ' + item.values[0]);
-        }
-        
-        if(item.name == "pmean") {
-            pmean = item.values[0];
-            console.log('pmean = ' + item.values[0]);
-        }
-    });
-    
-    weather = new Weather(time, temp, wd, wsymb2, pmean);
-    console.log(weather.toString());
-    
-
-    
-    costumData.forEach(function(item) {
-         console.log(item);
-    });
-    
-    return weather;
-}
-*/
